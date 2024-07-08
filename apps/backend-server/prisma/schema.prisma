@@ -1,0 +1,95 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Traveler {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String?
+  email     String?
+  password  String?
+  bookings  Booking[]
+}
+
+model Explorer {
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  email          String?
+  password       String?
+  name           String?
+  accommodations Accommodation[]
+  activities     Activity[]
+  commissions    Commission[]
+}
+
+model Accommodation {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  name       String?
+  location   String?
+  amenities  String?
+  explorer   Explorer? @relation(fields: [explorerId], references: [id])
+  explorerId String?
+  host       Host?     @relation(fields: [hostId], references: [id])
+  hostId     String?
+  bookings   Booking[]
+}
+
+model Host {
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  name           String?
+  email          String?
+  password       String?
+  accommodations Accommodation[]
+  activities     Activity[]
+}
+
+model Activity {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String?
+  description String?
+  location    String?
+  explorer    Explorer? @relation(fields: [explorerId], references: [id])
+  explorerId  String?
+  host        Host?     @relation(fields: [hostId], references: [id])
+  hostId      String?
+  bookings    Booking[]
+}
+
+model Commission {
+  id         String    @id @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  amount     Float?
+  explorer   Explorer? @relation(fields: [explorerId], references: [id])
+  explorerId String?
+}
+
+model Booking {
+  id              String             @id @default(cuid())
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  status          EnumBookingStatus?
+  traveler        Traveler?          @relation(fields: [travelerId], references: [id])
+  travelerId      String?
+  accommodation   Accommodation?     @relation(fields: [accommodationId], references: [id])
+  accommodationId String?
+  activity        Activity?          @relation(fields: [activityId], references: [id])
+  activityId      String?
+}
+
+enum EnumBookingStatus {
+  Option1
+}
